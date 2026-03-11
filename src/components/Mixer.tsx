@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
-import { Volume2 } from 'lucide-react';
+import { Volume2, Zap, WandSparkles } from 'lucide-react';
 import { MASTER_INSERT_ID, useDawStore } from '../store';
+import { AIMixMaster } from '../modules/aiMixMaster';
 
 const createMeterHeights = (volume: number, pan: number) => {
   const base = Math.max(8, Math.round(volume * 100));
@@ -42,9 +43,36 @@ export const Mixer = () => {
   return (
     <div className="relative flex flex-1 flex-col overflow-auto bg-[radial-gradient(circle_at_top,#2b3038_0%,#20242a_65%)] p-4">
       <div className="mb-3 rounded-sm border border-[var(--line-hard)] bg-[linear-gradient(180deg,#353b43_0%,#272c33_100%)] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
-        <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--text-2)]">Mixer</div>
-        <div className="text-xs text-[var(--text-1)]">Routing, sends, insert FX slots, and master bus</div>
-      </div>
+        <div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-[var(--text-2)]">Mixer</div>
+          <div className="text-xs text-[var(--text-1)]">Routing, sends, insert FX slots, and master bus</div>
+        </div>
+          <div className="mt-2 flex gap-2">
+            <button
+              onClick={() => {
+                const suggestions = AIMixMaster.autoBalanceLevels(channels);
+                suggestions.forEach(sug => setMixerInsertFxSlot(sug.insertId, sug.slotIndex, sug.fxName));
+              }}
+              className="flex items-center gap-1 rounded-sm bg-[var(--accent-green)] px-2 py-1 text-xs font-bold text-[#1f252a] hover:bg-[var(--accent-green-dark)]"
+            >
+              <Zap size={12} />
+              Auto Mix
+            </button>
+            <button
+              onClick={() => {
+                const master = mixerInserts.find(insert => insert.isMaster);
+                if (master) {
+                  const suggestion = AIMixMaster.loudnessMaster(master);
+                  setMixerInsertFxSlot(suggestion.insertId, suggestion.slotIndex, suggestion.fxName);
+                }
+              }}
+              className="flex items-center gap-1 rounded-sm bg-[var(--accent-purple)] px-2 py-1 text-xs font-bold text-[#1f252a] hover:bg-[var(--accent-purple-dark)]"
+            >
+              <WandSparkles size={12} />
+              Auto Master
+            </button>
+          </div>
+        </div>
 
       <div className="mb-3 overflow-auto rounded-sm border border-[var(--line-hard)] bg-[linear-gradient(180deg,#31363d_0%,#262b31_100%)] p-3 shadow-[0_16px_36px_rgba(0,0,0,0.32)]">
         <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-2)]">Channel to insert routing</div>

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { samplePacks } from './modules/samplePacks';
 
 export interface Step {
   isActive: boolean;
@@ -321,6 +322,7 @@ interface DawState {
   removeChannel: (id: string) => void;
   updateChannelVolume: (id: string, volume: number) => void;
   updateChannelPan: (id: string, pan: number) => void;
+  updateChannelSteps: (id: string, steps: Step[]) => void;
   setChannelPreset: (id: string, preset: string) => void;
   setChannelMixerInsert: (channelId: string, insertId: string) => void;
   setMixerInsertName: (insertId: string, name: string) => void;
@@ -372,6 +374,8 @@ const defaultSampleLibrary: SampleAsset[] = [
   { id: createId(), name: 'Hi-Hat Open', color: '#8e44ad', kind: 'drum' },
   { id: createId(), name: 'Clap Tight', color: '#16a085', kind: 'drum' },
   { id: createId(), name: 'Percussion', color: '#f39c12', kind: 'drum' },
+  // 808 Drumkits from web search
+  ...samplePacks.flatMap(pack => pack.samples.map(sample => ({ id: createId(), ...sample }))),
 ];
 
 const PLUGIN_TARGETS = ['VST3-ready-state', 'AU-ready-state', 'CLAP-ready-state'];
@@ -1176,6 +1180,9 @@ export const useDawStore = create<DawState>((set, get) => ({
   updateChannelPan: (id, pan) => set((state) => ({
     channels: updateChannelCollection(state.channels, id, (channel) => ({ ...channel, pan })),
     mixerInserts: state.mixerInserts.map((insert) => insert.id === createMixerInsertId(id) ? { ...insert, pan } : insert),
+  })),
+  updateChannelSteps: (id, steps) => set((state) => ({
+    channels: updateChannelCollection(state.channels, id, (channel) => ({ ...channel, steps })),
   })),
   setChannelPreset: (id, preset) => set((state) => ({
     channels: updateChannelCollection(state.channels, id, (channel) => ({ ...channel, preset })),

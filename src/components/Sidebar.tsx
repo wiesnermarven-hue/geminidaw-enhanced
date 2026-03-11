@@ -1,6 +1,6 @@
 import { ChangeEvent, useMemo, useRef, useState } from 'react';
 import React from 'react';
-import { Folder, Music, ChevronRight, Plus, Search, Library, Drum, AudioWaveform, Disc3, Sparkles, Tags, Save } from 'lucide-react';
+import { Folder, Music, ChevronRight, Plus, Search, Library, Drum, AudioWaveform, Disc3, Sparkles, Tags, Save, Zap } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import { defaultPresets, presetPacks, presetTags, starterTemplates, useDawStore, drumSynths, melodicSynths } from '../store';
 import { loadVstPlugin } from '../vst';
@@ -236,6 +236,31 @@ export const Sidebar = () => {
               )}
             </div>
           )}
+        </div>
+
+        {/* AI-Inspired Beat Generator */}
+        <div className="mt-2 flex cursor-pointer items-center gap-2 rounded-sm border border-black/30 bg-[linear-gradient(180deg,#4b535d_0%,#3a4048_100%)] p-1.5 text-xs font-semibold text-[var(--text-0)] shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]">
+          <Zap size={13} className="text-[var(--accent-yellow)]" />
+          <span>AI Beat Generator</span>
+        </div>
+        <div className="space-y-1 pl-5">
+          <button
+            onClick={() => {
+              // Generate random beat for drum channels
+              const state = useDawStore.getState();
+              state.channels.forEach((channel) => {
+                if (drumSynths.includes(channel.synthType)) {
+                  const randomSteps = Array.from({ length: state.patternLength }, () => Math.random() > 0.7 ? { isActive: true } : { isActive: false });
+                  state.updateChannelSteps(channel.id, randomSteps);
+                }
+              });
+              state.setView('rack');
+            }}
+            className="flex w-full items-center justify-between rounded-sm border border-transparent bg-[#2a2f35] p-1.5 text-xs text-[var(--text-1)] transition-all hover:border-[#4e5862] hover:bg-[#3a4048] hover:text-[var(--text-0)]"
+          >
+            <span>Generate Random Beat</span>
+            <Zap size={12} className="text-[var(--accent-yellow)]" />
+          </button>
         </div>
 
         <div className="border-t border-[var(--line-hard)] bg-[linear-gradient(180deg,#2a2f35_0%,#24292e_100%)] p-2">
