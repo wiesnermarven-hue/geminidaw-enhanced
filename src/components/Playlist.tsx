@@ -2,6 +2,7 @@ import { memo, type Dispatch, type SetStateAction, useEffect, useMemo, useRef, u
 import { useShallow } from 'zustand/react/shallow';
 import { CopyPlus, Eraser, Layers3 } from 'lucide-react';
 import { type PlaylistClip, useDawStore } from '../store';
+import { AutomationEditor } from './AutomationEditor';
 
 const PLAYLIST_ROWS = 8;
 const PLAYLIST_BARS = 32;
@@ -56,6 +57,7 @@ type PlaylistGridRowProps = {
   addAutomationPoint: (clipId: string, x: number, value: number) => void;
   removePlaylistClip: (clipId: string) => void;
   setAutomationPoint: (clipId: string, pointId: string, x: number, value: number) => void;
+  onAutomationChange: (clipId: string, points: { x: number; value: number }[]) => void;
   setSelectedPattern: (id: string) => void;
   setDragState: Dispatch<SetStateAction<DragState | null>>;
   setPreview: Dispatch<SetStateAction<PreviewState | null>>;
@@ -73,6 +75,7 @@ const PlaylistGridRow = memo(({
   addAutomationPoint,
   removePlaylistClip,
   setAutomationPoint,
+  onAutomationChange,
   setSelectedPattern,
   setDragState,
   setPreview,
@@ -152,54 +155,14 @@ const PlaylistGridRow = memo(({
             className="absolute right-0 top-0 h-full w-3 cursor-ew-resize rounded-r-[4px] bg-black/20"
           />
           {clip.clipType === 'automation' && (
-            <svg
-              className="absolute inset-0 h-full w-full"
-              viewBox="0 0 100 100"
-              preserveAspectRatio="none"
-              onDoubleClick={(event) => {
-                event.stopPropagation();
-                const rect = event.currentTarget.getBoundingClientRect();
-                const x = (event.clientX - rect.left) / rect.width;
-                const value = 1 - (event.clientY - rect.top) / rect.height;
-                addAutomationPoint(clip.id, x, value);
-              }}
-            >
-              <polyline
-                fill="none"
-                stroke="rgba(255,255,255,0.9)"
-                strokeWidth="2"
-                points={(clip.automationPoints || []).map((point) => `${point.x * 100},${(1 - point.value) * 100}`).join(' ')}
+            <div className="absolute inset-0 h-full w-full">
+              <AutomationEditor
+                points={(clip.automationPoints || []).map(p => ({ x: p.x, value: p.value }))}
+                onChange={(points) => onAutomationChange(clip.id, points)}
+                width={clip.length * 20} // approximate width based on clip length
+                height={50}
               />
-              {(clip.automationPoints || []).map((point) => (
-                <circle
-                  key={point.id}
-                  cx={point.x * 100}
-                  cy={(1 - point.value) * 100}
-                  r="3"
-                  fill="#ffffff"
-                  onMouseDown={(event) => {
-                    event.stopPropagation();
-                    event.preventDefault();
-                    const rect = event.currentTarget.ownerSVGElement?.getBoundingClientRect();
-                    if (!rect) return;
-                    const move = (moveEvent: MouseEvent) => {
-                      setAutomationPoint(
-                        clip.id,
-                        point.id,
-                        clamp((moveEvent.clientX - rect.left) / rect.width, 0, 1),
-                        clamp(1 - (moveEvent.clientY - rect.top) / rect.height, 0, 1),
-                      );
-                    };
-                    const up = () => {
-                      window.removeEventListener('mousemove', move);
-                      window.removeEventListener('mouseup', up);
-                    };
-                    window.addEventListener('mousemove', move);
-                    window.addEventListener('mouseup', up);
-                  }}
-                />
-              ))}
-            </svg>
+            </div>
           )}
         </div>
       );
@@ -483,6 +446,11 @@ export const Playlist = () => {
               addAutomationPoint={addAutomationPoint}
               removePlaylistClip={removePlaylistClip}
               setAutomationPoint={setAutomationPoint}
+              onAutomationChange={(clipId, points) => {
+                // Placeholder: update automation points
+                console.log('Update automation for clip', clipId, points);
+                // TODO: Add store action to set all points
+              }}
               setSelectedPattern={setSelectedPattern}
               setDragState={setDragState}
               setPreview={setPreview}
