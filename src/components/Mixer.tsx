@@ -125,6 +125,23 @@ export const Mixer = () => {
                 </label>
               </div>
 
+              {insert.id !== MASTER_INSERT_ID && (
+                <div className="mb-2 rounded-sm border border-black/30 bg-[#1f2429] p-2">
+                  <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[var(--text-2)]">Side-Chain Compression</div>
+                  <div className="flex items-center gap-2">
+                    <select className="rounded-sm border border-black/40 bg-[#2a3037] px-2 py-1 text-xs text-[var(--text-0)] outline-none">
+                      <option value="none">No Source</option>
+                      <option value="kick">Kick Channel</option>
+                      <option value="snare">Snare Channel</option>
+                      {/* Add more options */}
+                    </select>
+                    <button className="rounded-sm bg-[#2a3037] px-2 py-1 text-xs text-[var(--text-1)] hover:bg-[var(--accent-blue)]">
+                      Enable
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--text-2)]">FX Slots</div>
               <div className="mb-3 space-y-1">
                 {insert.fxSlots.map((slot, slotIndex) => (
