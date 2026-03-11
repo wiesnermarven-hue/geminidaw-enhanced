@@ -71,6 +71,24 @@ export const Mixer = () => {
               <WandSparkles size={12} />
               Auto Master
             </button>
+            <button
+              onClick={() => {
+                const suggestions = AIMixMaster.quantumReverb(channels);
+                suggestions.forEach(sug => setMixerInsertFxSlot(sug.insertId, sug.slotIndex, sug.fxName));
+              }}
+              className="flex items-center gap-1 rounded-sm bg-[var(--accent-blue)] px-2 py-1 text-xs font-bold text-[#1f252a] hover:bg-[var(--accent-blue-dark)]"
+            >
+              Quantum Reverb
+            </button>
+            <button
+              onClick={() => {
+                const suggestions = AIMixMaster.holographicPanning(channels);
+                suggestions.forEach(sug => setMixerInsertFxSlot(sug.insertId, sug.slotIndex, sug.fxName));
+              }}
+              className="flex items-center gap-1 rounded-sm bg-[var(--accent-green)] px-2 py-1 text-xs font-bold text-[#1f252a] hover:bg-[var(--accent-green-dark)]"
+            >
+              Holographic Pan
+            </button>
           </div>
         </div>
 

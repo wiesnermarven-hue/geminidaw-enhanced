@@ -80,6 +80,26 @@ export class AIMixMaster {
       params: { wet: 0.9, tone: 0.5, drive: 0.5 },
     };
   }
+
+  // New: Quantum Reverb using fractal delays
+  static quantumReverb(channels: any[]): MixSuggestion[] {
+    return channels.filter(channel => channel.name.includes('Drum') || channel.name.includes('Synth')).map(channel => ({
+      insertId: `insert-${channel.id}`,
+      slotIndex: 4,
+      fxName: 'Quantum Reverb',
+      params: { wet: 0.4, tone: 0.6, drive: 0.3 }, // Fractal depth, quantum scale, collapse rate
+    }));
+  }
+
+  // New: Holographic Panning using HRTF
+  static holographicPanning(channels: any[]): MixSuggestion[] {
+    return channels.map((channel, index) => ({
+      insertId: `insert-${channel.id}`,
+      slotIndex: 5,
+      fxName: 'Holographic Panner',
+      params: { wet: 0.5, tone: index * 0.1, drive: 0.7 }, // Azimuth, elevation, distance
+    }));
+  }
 }
 
 // Preset configurations
