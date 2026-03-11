@@ -2,6 +2,7 @@ import { ChangeEvent, useMemo, useRef, useState } from 'react';
 import { Folder, Music, ChevronRight, Plus, Search, Library, Drum, AudioWaveform, Disc3, Sparkles, Tags, Save } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import { defaultPresets, presetPacks, presetTags, starterTemplates, useDawStore, drumSynths, melodicSynths } from '../store';
+import { loadVstPlugin } from '../vst';
 
 export const Sidebar = () => {
   const { addChannel, channels, selectedChannelId, presetFavorites, setChannelPreset, generateSongArrangement, loadStarterTemplate, loadPresetPack, exportPresetBank, importPresetBank, sampleLibrary, selectedSampleId, setSelectedSample, addAudioClip, addAutomationClip, setView } = useDawStore(useShallow((state) => ({
@@ -32,6 +33,7 @@ export const Sidebar = () => {
   const [presetExplorerOpen, setPresetExplorerOpen] = useState(true);
   const [packsOpen, setPacksOpen] = useState(true);
   const [tagFilter, setTagFilter] = useState('all');
+  const [vstOpen, setVstOpen] = useState(true);
   const bankInputRef = useRef<HTMLInputElement>(null);
 
   const sampleResults = useMemo(
@@ -274,7 +276,20 @@ export const Sidebar = () => {
                   >
                     Drop
                   </button>
-                </div>
+</div>
+{/* VST Plugins */}
+<div onClick={() => setVstOpen(!vstOpen)} className="mt-2 flex cursor-pointer items-center gap-2 rounded-sm border border-black/30 bg-[linear-gradient(180deg,#4b535d_0%,#3a4048_100%)] p-1.5 text-xs font-semibold text-[var(--text-0)] shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]">
+  <ChevronRight size={14} className={`text-[var(--text-1)] transition-transform ${vstOpen ? 'rotate-90' : ''}`} />
+  <Disc3 size={13} className="text-[var(--accent-purple)]" />
+  <span>VST Plugins</span>
+</div>
+{vstOpen && (
+  <div className="space-y-1 pl-5">
+    <button onClick={() => { const url = prompt('Enter VST URL'); if (url) loadVstPlugin(url); }} className="w-full rounded-sm bg-[#2a2f35] p-1.5 text-[var(--text-1)] hover:bg-[#3a4048]">
+      Load VST Plugin
+    </button>
+  </div>
+)}
                 <div className="text-[10px] uppercase tracking-[0.14em] text-[var(--text-2)]">{sample.kind}</div>
               </div>
             ))}

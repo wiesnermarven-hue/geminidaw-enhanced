@@ -1,10 +1,24 @@
-import { ChangeEvent, useMemo, useRef } from 'react';
-import { Play, Square, Trash2, Circle, Clock, Volume2, Save, FolderOpen, Cpu, SlidersHorizontal, Music2, Disc3, Columns3, SlidersVertical, CopyPlus, PlusSquare } from 'lucide-react';
+import { ChangeEvent, useMemo, useRef, useState } from 'react';
+import { Play, Square, Trash2, Circle, Clock, Volume2, Save, FolderOpen, Cpu, SlidersHorizontal, Music2, Disc3, Columns3, SlidersVertical, CopyPlus, PlusSquare, Moon, Sun } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import { PATTERN_LENGTH_OPTIONS, useDawStore } from '../store';
 import { initAudio } from '../audio/engine';
 
 export const TopBar = () => {
+  const [darkMode, setDarkMode] = useState(false);
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    document.documentElement.classList.toggle('dark', !darkMode);
+    localStorage.setItem('darkMode', JSON.stringify(!darkMode));
+  };
+  // Initialize from localStorage
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('darkMode');
+    if (saved !== null) {
+      const val = JSON.parse(saved);
+      if (val !== darkMode) setDarkMode(val);
+    }
+  }
   const { isPlaying, togglePlay, stop, bpm, setBpm, clearSteps, activeView, setView, transportMode, setTransportMode, generateSongArrangement, masterVolume, setMasterVolume, saveProject, loadProject, midiInputs, selectedMidiInput, setSelectedMidiInput, midiError, projectStatus, lastSavedAt, channels, patterns, selectedPatternId, setSelectedPattern, addPattern, duplicatePattern, setPatternName, setPatternColor, patternLength, setPatternLength, getProjectData, importProjectData } = useDawStore(useShallow((state) => ({
     isPlaying: state.isPlaying,
     togglePlay: state.togglePlay,
@@ -86,6 +100,9 @@ export const TopBar = () => {
             <Disc3 size={14} className="text-[#2c3137]" />
           </div>
           <div className="leading-none">
+            <button onClick={toggleDarkMode} className="ml-2 rounded-sm p-1.5 text-[var(--text-1)] hover:bg-[var(--panel-3)]">
+              {darkMode ? <Sun size={14} /> : <Moon size={14} />}
+            </button>
             <div className="text-sm font-bold tracking-tight text-[var(--text-0)]">geminiDAW</div>
             <div className="text-[9px] font-bold uppercase tracking-[0.26em] text-[var(--text-2)]">step sequencer</div>
           </div>
