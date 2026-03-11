@@ -1,0 +1,5 @@
+{
+  "name": "geminiDAW",
+  "description": "A browser-based Digital Audio Workstation clone with a step sequencer and synths.",
+  "requestFramePermissions": ["midi"]
+}
